@@ -1,0 +1,9 @@
+{
+        "urls": ["http://scholarworks.montana.edu/", "https://scholarworks.montana.edu/"], 
+        "client_id": "foo", 
+        "client_secret": "bar", 
+        "image": "img/montana.jpg",
+        "id": "1",
+        "name": "Montana State University", 
+        "snippet": "This is for text about the sites that have Google Analytics hooked up"
+    }

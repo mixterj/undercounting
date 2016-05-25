@@ -1,0 +1,14 @@
+[
+    {
+        "id": "1",
+        "name": "Montana State University", 
+        "snippet": "This is for text about the sites that have Google Analytics hooked up",
+        "image": "img/montana.jpg"
+    },
+    { 
+        "id": "2",
+        "name": "University of New Mexico", 
+        "snippet": "This is for text about the sites that have Google Analytics hooked up",
+        "image": "img/new_mexico.jpg"
+    }
+]

@@ -1,0 +1,57 @@
+<h1>{{organization.name}}</h1>
+<p>{{organization.snippet}}</p>
+<div class="col-md-12">
+	<div class=row>
+		<div class="col-xs-4 col-sm-3 col-md-2">
+			<div class="thumbnail">
+				<img ng-src="{{organization.image}}">
+			</div>
+		</div>
+		<div ng-controller="profileEditor" class="col-xs-8 col-sm-9 col-md-10">
+			<form editable-form name="editableForm" onaftersave="saveOrganization()">
+				<div>
+					<!-- editable list of URLs -->
+					<span>URLs: </span> <span
+						editable-text="organization.urls" e-name="url"
+						onbeforesave="($url)" e-required>{{organization.urls}}</span>
+				</div>
+
+				<div>
+					<!-- editable client ID -->
+					<span>Client ID: </span> <span
+						editable-text="organization.client_id" e-name="client_id"
+						onbeforesave="($id)" e-required>{{organization.client_id}}</span>
+				</div>
+
+				<div>
+					<!-- editable client secret -->
+					<span>Client Secret: </span> <span
+						editable-text="organization.client_secret" e-name="client_secret"
+						onbeforesave="($secret)" e-required>{{organization.client_secret}}</span>
+				</div>
+
+				<div class="buttons">
+					<!-- button to show form -->
+					<button type="button" class="btn btn-default"
+						ng-click="editableForm.$show()" ng-show="!editableForm.$visible">
+						Edit</button>
+					<!-- buttons to submit / cancel form -->
+					<span ng-show="editableForm.$visible">
+						<button type="submit" class="btn btn-primary"
+							ng-disabled="editableForm.$waiting">Save</button>
+						<button type="button" class="btn btn-default"
+							ng-disabled="editableForm.$waiting"
+							ng-click="editableForm.$cancel()">Cancel</button>
+					</span>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<div class="text-center pad-above">
+	<button ng-click="toggle()">Get most recent Google API results
+	</button>
+	<p ng-show="visible">Not built yet</p>
+</div>
+

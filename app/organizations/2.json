@@ -1,0 +1,9 @@
+ {
+        "urls": ["http://repository.unm.edu/", "https://repository.unm.edu/"], 
+        "client_id": "foo", 
+        "client_secret": "bar", 
+        "image": "img/new_mexico.jpg",
+        "id": "2",
+        "name": "University of New Mexico", 
+        "snippet": "This is for text about the sites that have Google Analytics hooked up"
+    }

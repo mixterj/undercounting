@@ -1,0 +1,28 @@
+<h1>{{organization.name}}</h1>
+<p>{{organization.snippet}}</p>
+<div class="col-md-12">
+	<div class=row>
+		<div class="col-xs-4 col-sm-3 col-md-2">
+		<div class="thumbnail"><img ng-src="{{organization.image}}"></div>
+		</div>
+		<div class="col-xs-8 col-sm-9 col-md-10" ng-controller="OnbeforesaveCtrl">
+			<li><span>URLs</span>
+				<dl>
+					<dt>URLs for Google API</dt>
+					<dd ng-repeat="url in organization.urls">{{url}}</dd>
+				</dl></li>
+			<li class="pad-above"><span>Client ID</span>
+				<dd href="#" editable-text="organization.client_id" onbeforesave="updateId($new_clientId)">{{organization.client_id}}</dd></li>
+			<li class="pad-above"><span>Client Secret</span>
+				<dd>{{organization.client_secret}}</dd></li>
+		</div>
+	</div>
+</div>
+
+<div class="text-center pad-above">
+<button ng-click="toggle()">
+  Get most recent Google API results
+</button>
+<p ng-show="visible">Not built yet</p>
+</div>
+
