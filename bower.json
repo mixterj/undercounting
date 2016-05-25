@@ -1,8 +1,8 @@
 {
-  "name": "angular-seed",
-  "description": "A starter project for AngularJS",
+  "name": "undercounting",
+  "description": "part of the Measuring Up grant",
   "version": "0.0.0",
-  "homepage": "https://github.com/angular/angular-seed",
+  "homepage": "https://github.com/mixterj/undercounting",
   "license": "MIT",
   "private": true,
   "dependencies": {
