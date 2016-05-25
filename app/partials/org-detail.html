@@ -9,18 +9,18 @@
 		</div>
 		<div ng-controller="profileEditor" class="col-xs-8 col-sm-9 col-md-10">
 			<form editable-form name="editableForm" onaftersave="saveOrganization()">
-				<div>
+				
+				<div ng-repeat="url in organization.urls">
 					<!-- editable list of URLs -->
-					<span>URLs: </span> <span
-						editable-text="organization.urls" e-name="url"
-						onbeforesave="($url)" e-required>{{organization.urls}}</span>
+					<span>URL: </span> 
+					<span editable-text="url" e-name="url" e-required>{{url}}</span>
 				</div>
 
 				<div>
 					<!-- editable client ID -->
 					<span>Client ID: </span> <span
 						editable-text="organization.client_id" e-name="client_id"
-						onbeforesave="($id)" e-required>{{organization.client_id}}</span>
+						e-required>{{organization.client_id}}</span>
 				</div>
 
 				<div>
