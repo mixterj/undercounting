@@ -77,8 +77,11 @@ app.all('/*', function(req, res, next) {
   if (config.cors.enabled) {
     res.header("Access-Control-Allow-Origin", config.cors.sites);
     res.header("Access-Control-Allow-Headers", config.cors.headers);
-    next();
   }
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', 0);
+  next();
 });
 
 // handle posts
