@@ -1,0 +1,88 @@
+
+<div class="row">
+	
+	<div class="col-xs-2 col-sm-2 col-md-2">
+		<div class="thumbnail"><img ng-src="{{description.image}}"/></div>
+	</div>
+	
+	<div class= "col-xs-10 col-sm-10 col-md-10">
+		
+		<h2>{{description.name}}</h2>
+		
+		<div class="pad-above">
+			<button ng-click="getResults()" class="btn btn-primary">Visualize most recent Results</button>
+		</div>
+		<div class="pad-above">
+			<button ng-click="download()" class="btn btn-primary">Download most recent Results</button>
+		</div>
+
+	</div>
+
+</div>
+
+<div class=row>
+	
+	<div class="col-sm-12 col-md-6">
+		<div class="well">
+			<h3>Sites to Analyze</h3>
+			<form editable-form name="editSites" onaftersave="saveSites()">
+				<h4>URLs:</h4>
+				<div ng-repeat="url in description.urls track by $index">
+					<div editable-text="description.urls[$index]" e-name="url" e-required>{{url}}</div>
+				</div>
+				<div class="buttons pad-above">
+					<!-- button to show form -->
+					<button type="button" class="btn btn-default" ng-click="editSites.$show()" ng-show="!editSites.$visible">Edit</button>
+					<!-- buttons to submit / cancel form -->
+					<span ng-show="editSites.$visible">
+						<button type="submit" class="btn btn-primary" ng-disabled="editSites.$waiting">Save</button>
+						<button type="button" class="btn btn-default" ng-disabled="editSites.$waiting" ng-click="editSites.$cancel()">Cancel</button>
+					</span>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="col-sm-12 col-md-6">
+	
+		<div class="well">
+			<h3>Google Search Console Credentials</h3>
+			<div class="alert alert-info" role="alert"><strong>Warning! </strong>Do not share your Client ID and Secret with others!</div>
+			<form editable-form name="editSecrets" onaftersave="saveSecrets()">
+				
+				<h4>Client ID</h4>
+				<div 
+					editable-text="organization.installed.client_id" e-name="client_id"
+					e-required>{{organization.installed.client_id}}</div>
+  	
+				<h4>Client Secret</h4>
+					<div 
+						editable-text="organization.installed.client_secret"
+						e-name="client_secret" e-required>{{organization.installed.client_secret}}</div>
+	
+				<div class="buttons pad-above">
+					<!-- button to show form -->
+					<button type="button" class="btn btn-default"
+						ng-click="editSecrets.$show()" ng-show="!editSecrets.$visible">Edit</button>
+					<!-- buttons to submit / cancel form -->
+					<span ng-show="editSecrets.$visible">
+						<button type="submit" class="btn btn-primary"
+							ng-disabled="editSecrets.$waiting">Save</button>
+						<button type="button" class="btn btn-default"
+							ng-disabled="editSecrets.$waiting"
+							ng-click="editSecrets.$cancel()">Cancel</button>
+					</span>
+				</div>
+				
+			</form>
+			
+		</div>
+	</div>
+
+</div>
+
+<div google-chart chart="myChartObject" style="height: 600px; width: 100%;" ng-show="myChartObject.data"></div>
+
+<pre ng-show="apiData">{{ apiData | json }}</pre>
+
+

@@ -1,0 +1,168 @@
+# project = "IMLS Measuring Up"
+# name = "gaApiClickData",
+# version = "0.1",
+# author = "Patrick OBrien",
+# date = "2016-04-03"
+# author_email = "patrick@revxcorp.com",
+# description = ("Create data file from Google Search Analytics API (part of Search Console API)"),
+# license = "LICENSE",
+# keywords = "",
+# url = "",
+"""Example for using the Google Search Analytics API (part of Search Console API).
+
+A basic python command-line example that uses the searchAnalytics.query method
+of the Google Search Console API. This example demonstrates how to query Google
+search results data for your property. Learn more at
+https://developers.google.com/webmaster-tools/
+
+To use:
+1) Install the Google Python client library, as shown at https://developers.google.com/webmaster-tools/v3/libraries.
+2) Sign up for a new project in the Google APIs console at https://code.google.com/apis/console.
+3) Register the project to use OAuth2.0 for installed applications.
+4) Copy your client ID, client secret, and redirect URL into the client_secrets.json file included in this package.
+5) Run the app in the command-line as shown below.
+
+Sample usage:
+
+  $ python gaApiClickData.py 'https://www.example.com/' '2015-05-01'
+
+"""
+
+
+import argparse, os 
+import time as timepause
+from datetime import *
+import csv  # added to generate output file
+import sys
+import oauth2client
+from googleapiclient import sample_tools
+from os import path  #TODO seperate python code and csv output folders
+#from datetime import date, timedelta
+
+#TODO replace argparser code with loop function contaiing the following inputs
+# file containing base URLs of IRs participating in study (e.g., scholarworks.montana.edu)
+# calls both http & https versions of URL
+# calcs starting date for request by parsing date from latest URL CSV file (e.g., scholarworks.montana.edu_2016-02-01.csv)
+
+#TODO error check that dates requested are within the 90 day window of avilalbe Google Console data - calc by dateEnd & dateStart comented out below
+# dateEnd = date.today() - timedelta(days=3)
+# dateStart = dateEnd - timedelta(days=90)
+
+# Declare command-line flags. #TODO replace with loop described above
+argparser = argparse.ArgumentParser(add_help=False)
+
+
+def main(startDate, endDate, line, argv, directory):
+
+    # TODO determine how to 'argv' and 'parents=[argparser]' for passing function inputs
+    service, flags = sample_tools.init(
+        argv, 'webmasters', 'v3', __doc__, __file__, parents=[argparser],
+        scope='https://www.googleapis.com/auth/webmasters.readonly')
+
+# extract data for 2 of 3 search types.  video search excluded
+    searchType = ['image', 'web']
+
+# extract data for single day see https://developers.google.com/webmaster-tools/v3/searchanalytics/query#auth
+    for search in searchType:
+        request = {
+            'startDate': startDate,
+            'endDate': endDate,
+            'dimensions': ['date', 'device', 'page'],
+            'searchType': search,
+            'quotaUser': 'mixter',
+            # 'startRow': 0, #TODO create loop that makes another request if rows returned = 5000 and resets startRow == 1 + startRow + rowLimit
+            'rowLimit': 5000
+        }
+        # call execute_request function
+        response = execute_request(service, line, request)
+        # call writeCsv function
+        writeCsv(search, response, line, startDate, directory)
+
+
+def execute_request(service, line, request):
+    """Executes a searchAnalytics.query request.
+
+    Args:
+      service: The webmasters service to use when executing the query.
+      line: The site or app URI to request data for.
+      request: The request to be executed.
+
+    Returns:
+      An array of response rows.
+    """
+
+    return service.searchanalytics().query(
+        siteUrl=line, body=request).execute()
+
+ # added for writing data to CSV file
+def writeCsv(typeSearch, response, domain, startDate, directory):
+    # error check for requests that return 0 'rows'
+    if 'rows' not in response:
+        print 'Empty response'
+        if not os.path.exists('error.txt'):
+            open('error.txt', 'w').close()
+        with open('error.txt', 'a') as file:
+            file.write(domain, startDate, sep='\t')
+        return
+    # create output filename based upon URL and date of data extract
+    domain = domain.split('/')[2]
+    csvFile = domain + '_' + startDate + '.csv'
+    rows = response['rows'] # used to convert 'rows' returned from dict key:value to variable in writeRos function
+    # Create new CSV file is one does not already exist for URL and date
+    if not path.isfile(directory + '/' +csvFile):
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        with open(directory + '/' +csvFile, 'w') as toWrite:
+            writer = csv.writer(toWrite, delimiter=',', quoting=csv.QUOTE_NONNUMERIC)
+            # insert column headers into file
+            writer.writerow(['searchType', 'date', 'device', 'page', 'clicks', 'impressions', 'ctr', 'position'])
+            writeRows(rows, typeSearch, writer) #calls function writeRows
+        toWrite.close()
+    else:
+        # Append data if CSV file for URL and Date exists - e.g., 'image' and 'web' search data for both http and https versions of URL
+        with open(directory + '/' +csvFile, 'a') as toWrite:
+            writer = csv.writer(toWrite, delimiter=',', quoting=csv.QUOTE_NONNUMERIC)
+            writeRows(rows, typeSearch, writer) #calls function writeRows
+        toWrite.close()
+
+
+def writeRows(rows, typeSearch, writer):
+    rowCount = 0  # counter to ensure rows returned do not exceed API limit <= 5000
+    for row in rows:
+        if row['clicks'] == 0: continue  # exclude pages that with SERP impressions but no Clicks
+        # current code 'keys' are returned only if one or more API 'dimensions' are requested
+        # see https://developers.google.com/webmaster-tools/v3/searchanalytics/query#auth.
+        if 'keys' in row:
+            # convert 'keys' returned as dictionary with key:value paris to individual variables / columns in CSV file
+            date = row['keys'][0]
+            device = row['keys'][1]
+            page = row['keys'][2]
+        rowCount += 1
+        writer.writerow(
+            [typeSearch, date, device, page, row['clicks'], row['impressions'], row['ctr'], row['position']])
+    print typeSearch, rowCount  # check to ensure rows retunred are less than single API call limit of 5000
+    #TODO include error checking (e.g., try / except) only if rows exceed 5000
+
+
+if __name__ == '__main__':
+    f = open('sites.tsv','r')
+    lines = f.readlines()
+    argv = sys.argv[0]
+    dates = ['2016-03-09', '2016-03-10', '2016-03-11', '2016-03-12', '2016-03-13', '2016-03-14', '2016-03-15', '2016-03-16', '2016-03-17', '2016-03-18', '2016-03-19',
+             '2016-03-20', '2016-03-21', '2016-03-22', '2016-03-23', '2016-03-24', '2016-03-25', '2016-03-26', '2016-03-27', '2016-03-28', '2016-03-29', '2016-03-30', '2016-03-31', 
+             '2016-04-01', '2016-04-02', '2016-04-03', '2016-04-04', '2016-04-05', '2016-04-06', '2016-04-07', '2016-04-08', '2016-04-09', '2016-04-10', '2016-04-11', 
+             '2016-04-12', '2016-04-13', '2016-04-14', '2016-04-15', '2016-04-16', '2016-04-17', '2016-04-18', '2016-04-19', '2016-04-20', '2016-04-21', '2016-04-22',
+             '2016-04-23', '2016-04-24', '2016-04-25', '2016-04-26', '2016-04-27', '2016-04-28', '2016-04-29', '2016-04-30', '2016-05-01', '2016-05-02', '2016-05-03',
+             '2016-05-04', '2016-05-05', '2016-05-06', '2016-05-07', '2016-05-08', '2016-05-09', '2016-05-10', '2016-05-11', '2016-05-12', '2016-05-13', '2016-05-14',
+             '2016-05-15', '2016-05-16', '2016-05-17']
+
+    for line in lines:
+        directory = line.split('//', 1)[-1].replace('/','').strip()
+        print(directory)
+        for date in dates:
+            timepause.sleep(3)
+            #end = (date.today() - timedelta(days=3))
+            endDate = date
+            #start = end - timedelta(days=5)
+            startDate = date
+            main(startDate, endDate, line, argv, directory)

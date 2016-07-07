@@ -89,8 +89,9 @@ app.post('/', function(req, res){
   var jsonData = req.body;
   console.log(jsonData);
   var jsonString = JSON.stringify(jsonData,null,2)
-  if (jsonData.hasOwnProperty("id")) {
-    var jsonFile = config.jsonPath + jsonData.id + ".json";
+  if (jsonData.hasOwnProperty("installed")) {
+    var jsonFile = config.jsonPath + jsonData.installed.id + "/client_secrets.json";
+    console.log(jsonFile);
     fs.writeFile(jsonFile, jsonString, function(err) {
       if(err) {
         return console.log(err);
@@ -98,7 +99,19 @@ app.post('/', function(req, res){
       }
        sendResponse(res,config.errorObject["200"]);
     }); 
-  } else {
+  }
+  else if (jsonData.hasOwnProperty("urls")){
+	  var jsonFile = config.jsonPath + jsonData.id + "/data.json";
+	    console.log(jsonFile);
+	    fs.writeFile(jsonFile, jsonString, function(err) {
+	      if(err) {
+	        return console.log(err);
+	        sendResponse(res,config.errorObject["500"]);
+	      }
+	       sendResponse(res,config.errorObject["200"]);
+	    });
+  }
+  else {
     sendResponse(res,config.errorObject["400"]);
   }
 });

@@ -12,11 +12,11 @@ undercountingApp.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
       when('/organization', {
-        templateUrl: 'partials/org-list.html',
+        templateUrl: 'views/org-list.html',
         controller: 'OrganizationListController'
       }).
       when('/organization/:orgId', {
-        templateUrl: 'partials/org-detail.html',
+        templateUrl: 'views/org-detail.html',
         controller: 'OrganizationDetailController'
       }).
       otherwise({

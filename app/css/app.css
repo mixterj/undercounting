@@ -1,6 +1,34 @@
 /* app css stylesheet */
 
+html, body {
+  height: 100%;
+}
 body {
-  padding-top: 20px;
+  background-color: #FFF;
+  color: #000;
+}
+.pad-above {
+  padding-top: 1em;
+}
+.editable-wrap {
+    width: 20em;
+}
+.wrapper {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -4.5em;
+}
+.footer, .push {
+  height: 3.5em;
+  padding-top: .5em;
+  margin-top: 1em;
+}
+.footer {
+  border-top: 1px solid #CCC;
+  background-color: #EFEFEF;
+}
+.input_field {
+  width: 100px;
 }
 
